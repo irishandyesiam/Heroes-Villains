@@ -9,7 +9,14 @@ from supers import serializers
 @api_view(['GET', 'POST'])
 def supers_list(request):
     if request.method == 'GET':
+
+        select_type = request.query_params.get('type')
+        print(select_type)
         supers = Super.objects.all()
+
+        if select_type:
+            supers = supers.filter(super_type__type=select_type)
+
         serializer = SuperSerializer(supers, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     elif request.method == 'POST':
@@ -20,7 +27,7 @@ def supers_list(request):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def super_detail(request, pk):
-    super = get_object_or_404(super, pk=pk)
+    super = get_object_or_404(Super, pk=pk)
     if request.method == 'GET':
         serializer = SuperSerializer(super)
         return Response(serializer.data, status=status.HTTP_200_OK)  
